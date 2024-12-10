@@ -2,15 +2,18 @@ function create_data()
 % Create a list of data for Luck et al. 1996 Replication #EEGManyLabs
 %
 % INPUT: 
-%  - wordlist
+%  - wordlist: MAT file with words for your language
 %
 % OUTPUT:
-% - LuckList. csv
+% - LuckList.csv
 %   * T0, T1, T2
 %   * lags: Lags generated, containing:
 %         * lagT1: random values between 7 and 10
 %         * lagT2: random (1, 3, or 7)
 %         * lagEnd: lagT0 + lagT1 + lagT2 = 20
+%   * response T1
+%   * response T2
+%   * related
 % - distractors.csv
 % 
 % Authors: Guiomar Niso, Instituto Cajal, 2024
@@ -21,21 +24,52 @@ clc; clear;
 % Path to the wordlist
 mypath = 'D:\Users\Usuario\Documents\GitHub\Replication_Lucketal1996\';
 filename = 'words_spanish.mat';
-wordlist = importdata([mypath,filename]); 
+newperm = 1; % 0: use existing permuntation of the list; 1: new permutation for unrelated words
 
-% Nwords = 360;
-Nwords = size(wordlist,1);
-Ndistractors = 20*Nwords;
 
+
+%% Random permutation of wordpairs
+
+% Load data
+wordlist_related = importdata([mypath,filename]); 
+Nwords1 = size(wordlist_related,1);
+
+% Generar una permutación aleatoria de los índices de la segunda columna
+if newperm
+    permutationIndices = randperm(Nwords1);
+else
+    % load permutationIndices
+    permutationIndices = importdata([mypath,'permutationIndices.mat']); 
+end
+
+% Permutate 2nd column for unrelated words
+wordlist_unrelated = wordlist_related;
+wordlist_unrelated(:, 2) = wordlist_related(permutationIndices, 2);
+
+% save([filename(1:end-4),'_unrelated.mat'],"wordlist_unrelated")
+save('permutationIndices.mat',"permutationIndices")
+
+
+%% Full wordlist
+
+% Merge related and unrelated lists
+wordlist = [wordlist_related; wordlist_unrelated];
+Nwords = 2*Nwords1;
+
+% Number of distactors 
+Ndistractors = 10*Nwords;
 
 %% T0: Semantic Context
+
 % Create a list of N words for T0
 wordT0 = cell(Nwords,1);
 for i=1:Nwords
     wordT0{i} = wordlist{i,1};
 end
 
+
 %% T2: Target word
+
 % Create a list of N words for T2
 % Fill in with 'X' the word list pairs
 totalChars = 7; % Length for each string
@@ -46,20 +80,21 @@ for i=1:Nwords
 end
 
 %% T1: Numbers
+
 % Generate a random number between 0 and 9
 randNum = randi([2, 9],Nwords,1);
 % Create a cell array of random strings with the same number repeated
 numberT1 = cellstr(repmat(num2str(randNum), 1, totalChars));
 
 %% Generate lags
-
 lags = zeros(Nwords,3);
-
+% Generate random lags following Luck et al.1996
 for i=1:Nwords
     lags(i,:) = generateRandomLags();
 end
 
 %% Response T1: odd / even
+
 responseT1 = cell(Nwords,1);
 for i=1:Nwords
     if mod(numberT1{i}(1), 2) == 0 
@@ -69,17 +104,28 @@ for i=1:Nwords
     end
 end
 
+
 %% Response T2: related / non related
+
 responseT2 = cell(Nwords,1);
-for i=1:Nwords  
-    responseT1{i} ='j'; % related
+related = cell(Nwords,1);
+
+for i=1:Nwords
+    if i<=Nwords1
+        responseT2{i} ='j'; % related
+        related{i} = 1;
+    else
+        responseT2{i} ='f'; % unrelated
+        related{i} = 0;
+    end
 end
+
 
 %% SAVE CSV with all the information
 
-headers = {'T0','T2','T1','lagT0','lagT1','lagT2','reponseT1','reponseT2'};
+headers = {'T0','T2','T1','lagT0','lagT1','lagT2','reponseT1','reponseT2', 'related'};
 
-data = [wordT0 wordT2 numberT1 num2cell(lags,size(lags)) responseT1 responseT2];
+data = [wordT0 wordT2 numberT1 num2cell(lags,size(lags)) responseT1 responseT2 related];
 % Convert cell array to a table with column names
 dataTable = cell2table(data, 'VariableNames', headers);
 % Export to CSV file
@@ -110,7 +156,7 @@ end
 
 
 function newWord = fillWordX(word, totalChars, fillChar)
-% FUNCTION newWord = fillWordX(word, totalChars, fillChar)
+%% FUNCTION newWord = fillWordX(word, totalChars, fillChar)
 %
 % Generates a new word filled with 'X' (or any other desired char) up to a
 % certain length, with a preference of more filling chars at the begining
@@ -143,7 +189,7 @@ end
 
 
 function lags = generateRandomLags()
-% FUNCTION lags = generateRandomLags()
+%% FUNCTION lags = generateRandomLags()
 %
 % Generates random lags for the replication of Luck et al. 1996
 %
@@ -192,7 +238,7 @@ end
 
 
 function randomString = generateRandomString(totalChars, excludeLetters)
-% FUNCTION randomString = generateRandomString(StringLength, ExcludeLetters)
+%% FUNCTION randomString = generateRandomString(StringLength, ExcludeLetters)
 %
 % Generates a random string of a certain length excluding specific letters
 % (without repeting letters)
