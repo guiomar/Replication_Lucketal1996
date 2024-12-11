@@ -31,8 +31,9 @@ newperm = 0; % 0: use existing permuntation of the list; 1: new permutation for 
 %% Random permutation of wordpairs
 
 % Load data
-delimiter=', ';
-wordlist_related = importdata([mypath,filename],delimiter); 
+% wordlist_related = importdata([mypath,filename]); % MAT file
+wordlist_relatedT = readtable([mypath,filename]); 
+wordlist_related = table2array(wordlist_relatedT);
 
 Nwords1 = size(wordlist_related,1);
 
@@ -131,7 +132,8 @@ data = [wordT0 wordT2 numberT1 num2cell(lags,size(lags)) responseT1 responseT2 r
 % Convert cell array to a table with column names
 dataTable = cell2table(data, 'VariableNames', headers);
 % Export to CSV file
-writetable(dataTable, ['wordPairs_',filename(1:end-4),'.xlsx']);
+% writetable(dataTable, ['LuckList_',filename(1:end-4),'.xlsx']);
+writetable(dataTable, ['wordPairs.xlsx']);
 
 
 %% List of distractors
