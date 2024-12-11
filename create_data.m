@@ -23,7 +23,7 @@ clc; clear;
 
 % Path to the wordlist
 mypath = 'D:\Users\Usuario\Documents\GitHub\Replication_Lucketal1996\';
-filename = 'words_spanish.mat';
+filename = 'words.csv';
 newperm = 0; % 0: use existing permuntation of the list; 1: new permutation for unrelated words
 
 
@@ -31,8 +31,9 @@ newperm = 0; % 0: use existing permuntation of the list; 1: new permutation for 
 %% Random permutation of wordpairs
 
 % Load data
-delimiter=',';
-wordlist_related = importdata([mypath,filename]); 
+% wordlist_related = importdata([mypath,filename]); % MAT file
+wordlist_relatedT = readtable([mypath,filename],'ReadVariableNames', false); 
+wordlist_related = table2array(wordlist_relatedT);
 
 Nwords1 = size(wordlist_related,1);
 
