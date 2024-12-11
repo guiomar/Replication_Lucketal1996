@@ -123,7 +123,7 @@ end
 
 %% SAVE CSV with all the information
 
-headers = {'T0','T2','T1','lagT0','lagT1','lagT2','reponseT1','reponseT2', 'related'};
+headers = {'T0','T2','T1','lagT0','lagT1','lagT2','responseT1','responseT2', 'related'};
 
 data = [wordT0 wordT2 numberT1 num2cell(lags,size(lags)) responseT1 responseT2 related];
 % Convert cell array to a table with column names
