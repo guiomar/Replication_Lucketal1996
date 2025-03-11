@@ -60,7 +60,7 @@ wordlist = [wordlist_related; wordlist_unrelated];
 Nwords = 2*Nwords1;
 
 % Number of distactors 
-Ndistractors = 10*Nwords;
+Ndistractors = 13000;%10*Nwords;
 
 %% T0: Semantic Context
 
