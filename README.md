@@ -1,6 +1,12 @@
-Main file: create_data.m
+# Code to create the data for the replication of Luck et al. 1996
+
+It creates the distractors and lags for the replication of (Luck et al. *Nature* 1996), to study the phenomenon of the Attentional Blink.
+This is part of the #EEGManyLabs project.
+
+Main file: **create_data.m**
 
 Create a list of data for Luck et al. 1996 Replication #EEGManyLabs
+
 INPUT: 
 - wordlist: MAT file with words for your language
 
